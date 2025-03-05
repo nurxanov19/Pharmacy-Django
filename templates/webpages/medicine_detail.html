@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medicine Detail</title>
+</head>
+<body>
+
+<div class="container">
+    {% if medicine.image %}
+    <img src="{{ medicine.image.url }}" class="medicine-img"
+         onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400?text=No+Image';">
+    {% else %}
+        <img src="media/default.png" class="medicine-img">
+    {% endif %}
+</div>
+
+    <h1 class="medicine-title">{{ medicine.title}} {{ medicine.company }}</h1>
+    <p class="price">Price: ${{ medicine.price }}</p>
+
+    <div class="details">
+        <h3>Technical parameters:</h3>
+        <p><strong>Expiration Date:</strong> {{ medicine.expiration_date }}</p>
+        <p><strong>Country:</strong> {{ medicine.country }}</p>
+    </div>
+
+    <div class="description">
+        <h3>Additional info:</h3>
+        <p>{{ medicine.definition }}</p>
+    </div>
+
+    <a href="{% url 'medicine-list' %}" class="back-btn">⬅️ Back to List</a><br>
+    <a href="{% url 'medicine-update' medicine.id %}" class="back-btn">⬅️ Update</a><br>
+    <a href="{% url 'medicine-delete' medicine.id %}" class="back-btn">⬅️ Delete</a>
+
+</body>
+</html>
+
+

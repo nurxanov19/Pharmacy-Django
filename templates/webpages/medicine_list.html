@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Medicine List</title>
+</head>
+<body>
+<h1>List of Medicine</h1>
+<div class="container">
+        {% for medicine in medicines %}
+        <div class="medicine-card">
+            <a href="/medicine-detail/{{ medicine.pk }}" class="medicine-image">
+                {% if medicine.image %}
+                <img src="{{ medicine.image.url }}" alt="{{ medicine.title }} {{ medicine.company }}">
+                {% else %}
+                <img src="placeholder.jpg" alt="Placeholder">
+                {% endif %}
+            </a>
+            <div class="medicine-detail">
+                <h2>{{ medicine.title }} {{ medicine.company }}</h2>
+                <p><strong>Price:</strong> {{ medicine.price }}</p>
+                <p><strong>Country:</strong> {{ medicine.country }}</p>
+                <p><strong>Company:</strong> {{ medicine.company }}</p>
+                <p><strong>Description:</strong> {{ medicine.definition }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+<a href="{% url 'medicine-create' %}">Create Medicine</a><br>
+<a href=" {% url 'home-page' %}">Back</a>
+</body>
+</html>
