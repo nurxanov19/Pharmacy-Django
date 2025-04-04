@@ -9,20 +9,120 @@ from django.views.generic import UpdateView, DeleteView
 from rest_framework import generics
 from .serializer import MediacineSerializer
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.views import status
 
 # class MedicineList(generics.ListAPIView):
 #     queryset = Medicine.objects.all()
 #     serializer_class = MediacineSerializer
 
-class BookList(APIView):
+class MedicineApiList(APIView):
     def get(self, request):
         medicines = Medicine.objects.all()
-        serializeer = MediacineSerializer(medicines, many=True)
+        serializer = MediacineSerializer(medicines, many=True)
+
+        response = {
+            'data': serializer.data,
+            'status': status.HTTP_200_OK,
+            'message': 'Medicine List'
+        }
+        return Response(response)
 
 
+class MedicineApiCreate(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = MediacineSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'data': serializer.data,
+                'status': status.HTTP_201_CREATED,
+                'message': 'Medicine List',
+            }
+        else:
+            response = {
+                'data': serializer.errors,
+                'status': status.HTTP_400_BAD_REQUEST,
+                'message': 'Oops,something went wrong',
+            }
+        return Response(response)
 
 
+class MedicineApiUpdate(APIView):
+    def put(self, request, pk, *args, **kwargs):
+        medicine = Medicine.objects.get(pk=pk)
+        serializer = MediacineSerializer(medicine, data=request.data)
 
+        if serializer.is_valid():
+            serializer.save()
+
+            response = {
+                'data': serializer.data,
+                'status': status.HTTP_200_OK,
+                'message': 'Medicine Update',
+            }
+        else:
+            response = {
+                'data': serializer.errors,
+                'status': status.HTTP_400_BAD_REQUEST,
+                'message': 'Oops, Something went wrong',
+            }
+        return Response(response)
+
+    def patch(self, request, pk, *arg, **kwarg):
+        medicine = Medicine.objects.get(pk=pk)
+        serializer = MediacineSerializer(medicine, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            response = {
+                'data': serializer.data,
+                'status': status.HTTP_200_OK,
+                'message': 'Medicine Update patch',
+            }
+        else:
+            response = {
+                'data': serializer.errors,
+                'status': status.HTTP_400_BAD_REQUEST,
+                'message': 'Smth gone wrong',
+            }
+        return Response(response)
+
+
+class MedicineApiDetail(APIView):
+    def get(self, request, pk):
+        medicine = Medicine.objects.get(pk=pk)
+        serializer = MediacineSerializer(medicine, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            response = {
+                'data': serializer.data,
+                'status': status.HTTP_200_OK,
+                'message': 'Medicine Detail',
+            }
+        else:
+            response = {
+                'data': serializer.errors,
+                'status': status.HTTP_400_BAD_REQUEST,
+                'message': 'Smth gone wrong',
+            }
+
+        return Response(response)
+
+
+class MedicineApiDelete(APIView):
+    def delete(self, request, pk):
+        medicine = Medicine.objects.get(pk=pk)
+        medicine.delete()
+
+        response = {
+            'data': None,
+            'status': status.HTTP_200_OK,
+            'message': 'Medicine Detail',
+        }
+        return Response(response)
 
 
 
