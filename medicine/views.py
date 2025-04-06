@@ -6,17 +6,19 @@ from django.urls import reverse_lazy
 from .forms import MedicineForm
 from django.views.generic import UpdateView, DeleteView
 
-from rest_framework import generics
+from rest_framework import generics, permissions
 from .serializer import MediacineSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.views import status
+from .permissions import IsOwnerOrReadOnly
 
 # class MedicineList(generics.ListAPIView):
 #     queryset = Medicine.objects.all()
 #     serializer_class = MediacineSerializer
 
 class MedicineApiList(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
     def get(self, request):
         medicines = Medicine.objects.all()
         serializer = MediacineSerializer(medicines, many=True)
@@ -92,37 +94,46 @@ class MedicineApiUpdate(APIView):
 
 class MedicineApiDetail(APIView):
     def get(self, request, pk):
-        medicine = Medicine.objects.get(pk=pk)
-        serializer = MediacineSerializer(medicine, data=request.data)
 
-        if serializer.is_valid():
-            serializer.save()
+        try:
+            medicine = Medicine.objects.get(pk=pk)
+            serializer = MediacineSerializer(medicine)
             response = {
                 'data': serializer.data,
                 'status': status.HTTP_200_OK,
                 'message': 'Medicine Detail',
-            }
-        else:
+                }
+        except Exception as e:
             response = {
-                'data': serializer.errors,
+                'data': str(e),
                 'status': status.HTTP_400_BAD_REQUEST,
-                'message': 'Smth gone wrong',
+                'message': 'Response Failed',
             }
 
-        return Response(response)
+        finally:
+            return Response(response)
 
 
 class MedicineApiDelete(APIView):
+    permission_classes = [permissions.IsAuthenticated, ]
     def delete(self, request, pk):
-        medicine = Medicine.objects.get(pk=pk)
-        medicine.delete()
+        try:
+            medicine = Medicine.objects.get(pk=pk)
+            medicine.delete()
 
-        response = {
-            'data': None,
-            'status': status.HTTP_200_OK,
-            'message': 'Medicine Detail',
-        }
-        return Response(response)
+            response = {
+                'data': None,
+                'status': status.HTTP_200_OK,
+                'message': 'Medicine Detail',
+            }
+        except Exception as e:
+            response = {
+                'data': str(e),
+                'status': status.HTTP_400_BAD_REQUEST,
+                'message': 'Delete Failed',
+            }
+        finally:
+            return Response(response)
 
 
 

@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 
-from django.conf.global_settings import MEDIA_ROOT, MEDIA_URL
+from django.conf.global_settings import MEDIA_ROOT, MEDIA_URL, EMAIL_BACKEND
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,11 +46,22 @@ INSTALLED_APPS = [
     'django_extensions',
 
     'rest_framework',
+    'rest_framework.authtoken',  # Token yaratib beradi
+    'dj_rest_auth.registration',
+
+    'dj_rest_auth',
+    'allauth',                      # DRF da 'sign up' uchun ishlatiladi
+    'allauth.account',              # DRF da account orqali 'sign up' uchun ishlatiladi
+    'allauth.socialaccount',        # DRF da GitHub, Google.. account lar bilan 'sign up' uchun ishlatiladi
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',      # webda (chrome, safari..) ishlash uchun
     ]
 }
 
@@ -63,6 +74,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -143,3 +155,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR / 'media/')
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
